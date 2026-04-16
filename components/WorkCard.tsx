@@ -6,13 +6,11 @@ import { Work } from '@/lib/supabase'
 
 interface WorkCardProps {
   work: Work
-  onDelete?: (id: string, filename: string) => void
+  onDelete?: (id: string, imageUrl: string) => void
   showDelete?: boolean
 }
 
 export default function WorkCard({ work, onDelete, showDelete = false }: WorkCardProps) {
-  const filename = work.image_url.split('/').pop() || ''
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -79,7 +77,7 @@ export default function WorkCard({ work, onDelete, showDelete = false }: WorkCar
       {showDelete && onDelete && (
         <div className="px-5 pb-4">
           <button
-            onClick={() => onDelete(work.id, filename)}
+            onClick={() => onDelete(work.id, work.image_url)}
             className="w-full py-2 rounded-lg text-[11px] tracking-[1px] uppercase font-medium transition-all duration-200 hover:opacity-80"
             style={{
               background: 'rgba(239,68,68,0.1)',

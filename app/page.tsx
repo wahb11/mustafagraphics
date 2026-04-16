@@ -6,36 +6,37 @@ import Link from 'next/link'
 import ServiceCard from '@/components/ServiceCard'
 import WorkCard from '@/components/WorkCard'
 import { FadeUp, FadeLeft, FadeRight, HeroStagger, HeroItem } from '@/components/Animate'
-import { Work } from '@/lib/supabase'
+import { Review, Work } from '@/lib/supabase'
 import { getFeaturedWorks } from '@/lib/works'
-import { Sparkles, Briefcase, Users, Star, ArrowRight, ChevronDown } from 'lucide-react'
+import { getApprovedReviews, submitReview } from '@/lib/reviews'
+import { Sparkles, Briefcase, Users, Star, ArrowRight } from 'lucide-react'
 import { LinkedInIcon, InstagramIcon, FacebookIcon, TikTokIcon } from '@/components/SocialIcons'
 
 // ── constants ────────────────────────────────────────────────────────────────
 const SERVICES = [
-  { name: 'Logo Design', description: 'Professional logos, brand marks, and complete brand identity packages that make your business stand out.', tools: ['Illustrator', 'Photoshop', 'Canva'], slug: 'logo-design', icon: '✦' },
+  { name: 'Logo Design', description: 'Professional logos, brand marks, and complete brand identity packages that make your business stand out.', tools: ['Illustrator', 'Photoshop', 'CorelDRAW'], slug: 'logo-design', icon: '✦' },
   { name: 'Social Media Design', description: 'Eye-catching posts, stories, and reels graphics for Instagram, Facebook, and more platforms.', tools: ['Instagram', 'Facebook', 'TikTok'], slug: 'social-media', icon: '◈' },
   { name: 'Banner Design', description: 'Facebook covers, YouTube channel art, LinkedIn banners crafted to impress on every platform.', tools: ['Facebook', 'YouTube', 'LinkedIn'], slug: 'banner-design', icon: '▭' },
-  { name: 'YouTube Thumbnail', description: 'High-CTR thumbnails designed to get more clicks and grow your channel faster.', tools: ['Photoshop', 'Canva'], slug: 'youtube-thumbnail', icon: '▶' },
+  { name: 'YouTube Thumbnail', description: 'High-CTR thumbnails designed to get more clicks and grow your channel faster.', tools: ['Photoshop', 'CorelDRAW'], slug: 'youtube-thumbnail', icon: '▶' },
   { name: 'Graphic Design', description: 'Posters, flyers, brochures, and print materials designed with professional quality.', tools: ['Photoshop', 'Illustrator'], slug: 'graphic-design', icon: '◉' },
   { name: 'Branding Package', description: 'Complete branding solutions — logo, colors, typography, and brand guidelines all in one.', tools: ['Full Branding', 'Guidelines'], slug: 'branding-package', icon: '◈' },
 ]
 
 const STATS = [
-  { num: 4, suffix: '+', label: 'Years Experience', icon: Briefcase },
+  { num: 2, suffix: '+', label: 'Years Experience', icon: Briefcase },
   { num: 60, suffix: '+', label: 'Projects Done', icon: Sparkles },
   { num: 40, suffix: '+', label: 'Happy Clients', icon: Users },
-  { num: 5, suffix: '★', label: 'Star Reviews', icon: Star },
+  { num: 100, suffix: '%', label: 'Satisfaction', icon: Star },
 ]
-
 const SKILLS = [
   { name: 'Logo Design', pct: 92 },
   { name: 'Social Media Design', pct: 90 },
+  { name: 'Complete Branding', pct: 88 },
+  { name: 'Thumbnail Design', pct: 85 },
   { name: 'Adobe Photoshop', pct: 88 },
   { name: 'Adobe Illustrator', pct: 82 },
-  { name: 'Banner & Thumbnail', pct: 85 },
-  { name: 'Canva', pct: 95 },
-]
+  { name: 'CorelDRAW', pct: 95 },
+];
 
 const SOCIALS = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/mustafa-graphics-481226325/', icon: LinkedInIcon },
@@ -45,6 +46,49 @@ const SOCIALS = [
 ]
 
 const ease = [0.22, 1, 0.36, 1] as const
+
+const FALLBACK_TESTIMONIALS: Review[] = [
+  {
+    id: 'demo-1',
+    name: 'Ayesha Khan',
+    role: 'Startup Founder',
+    message: 'Mustafa delivered a clean logo and social kit that instantly made our brand look premium.',
+    rating: 5,
+    status: 'approved',
+    created_at: new Date().toISOString(),
+    approved_at: new Date().toISOString(),
+  },
+  {
+    id: 'demo-2',
+    name: 'Bilal Ahmed',
+    role: 'YouTube Creator',
+    message: 'My thumbnail CTR improved after the redesign. Great communication and fast revisions.',
+    rating: 5,
+    status: 'approved',
+    created_at: new Date().toISOString(),
+    approved_at: new Date().toISOString(),
+  },
+  {
+    id: 'demo-3',
+    name: 'Hira Malik',
+    role: 'Marketing Lead',
+    message: 'Professional banners and social posts that matched our campaign style perfectly.',
+    rating: 4,
+    status: 'approved',
+    created_at: new Date().toISOString(),
+    approved_at: new Date().toISOString(),
+  },
+  {
+    id: 'demo-4',
+    name: 'Usman Raza',
+    role: 'E-commerce Owner',
+    message: 'Excellent branding work and smooth communication throughout the project. Highly recommended.',
+    rating: 5,
+    status: 'approved',
+    created_at: new Date().toISOString(),
+    approved_at: new Date().toISOString(),
+  },
+]
 
 // ── count-up hook ─────────────────────────────────────────────────────────────
 function useCountUp(target: number, active: boolean) {
@@ -119,17 +163,39 @@ function SkillBar({ name, pct, index }: { name: string; pct: number; index: numb
 // ── page ──────────────────────────────────────────────────────────────────────
 export default function HomePage() {
   const [featuredWorks, setFeaturedWorks] = useState<Work[]>([])
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [formData, setFormData] = useState({ name: '', role: '', message: '', rating: 5 })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const heroRef = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '18%'])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0])
 
   useEffect(() => { getFeaturedWorks(6).then(setFeaturedWorks) }, [])
+  useEffect(() => { getApprovedReviews(6).then(setReviews) }, [])
+
+  const shownReviews = reviews.length > 0 ? reviews : FALLBACK_TESTIMONIALS
+
+  const handleReviewSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setSubmitMessage(null)
+    setIsSubmitting(true)
+
+    const result = await submitReview(formData)
+    if (result.success) {
+      setSubmitMessage({ type: 'success', text: 'Thanks! Your review was submitted and will appear after admin approval.' })
+      setFormData({ name: '', role: '', message: '', rating: 5 })
+    } else {
+      setSubmitMessage({ type: 'error', text: result.error || 'Unable to submit review right now.' })
+    }
+    setIsSubmitting(false)
+  }
 
   return (
     <>
       {/* ═══════════ HERO ═══════════ */}
-      <section ref={heroRef} className="relative min-h-screen flex flex-col justify-center px-6 md:px-[60px] pt-36 pb-24 overflow-hidden">
+      <section ref={heroRef} className="relative min-h-screen flex flex-col justify-center items-center px-6 md:px-[60px] pt-36 pb-24 overflow-hidden">
         {/* Glows */}
         {[
           { x: '60%', y: '-10%', s: 520, d: 0 },
@@ -146,7 +212,24 @@ export default function HomePage() {
         <div className="absolute inset-0 pointer-events-none opacity-[0.025]"
           style={{ backgroundImage: 'linear-gradient(var(--purple-light) 1px,transparent 1px),linear-gradient(90deg,var(--purple-light) 1px,transparent 1px)', backgroundSize: '64px 64px' }} />
 
-        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="relative z-10 max-w-4xl">
+        {[0, 1, 2].map(index => (
+          <motion.div
+            key={`float-shape-${index}`}
+            className="absolute rounded-full pointer-events-none"
+            style={{
+              width: index === 0 ? 22 : index === 1 ? 30 : 16,
+              height: index === 0 ? 22 : index === 1 ? 30 : 16,
+              border: '1px solid var(--purple)',
+              background: 'var(--purple-glow)',
+              left: index === 0 ? '20%' : index === 1 ? '76%' : '62%',
+              top: index === 0 ? '24%' : index === 1 ? '34%' : '66%',
+            }}
+            animate={{ y: [0, -12, 0], x: [0, 6, 0], opacity: [0.4, 0.75, 0.4] }}
+            transition={{ duration: 6 + index, repeat: Infinity, ease: 'easeInOut', delay: index * 0.4 }}
+          />
+        ))}
+
+        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="relative z-10 max-w-4xl text-center">
           <HeroStagger>
             {/* Badge */}
             <HeroItem>
@@ -159,34 +242,40 @@ export default function HomePage() {
 
             {/* Name */}
             <HeroItem>
-              <h1 className="font-semibold leading-none tracking-[-1px] mb-3" style={{ fontSize: 'clamp(52px, 8vw, 96px)' }}>
+              <h1
+                className="leading-none tracking-[-1px] mb-3 font-bold"
+                style={{
+                  fontSize: 'clamp(52px, 8vw, 96px)',
+                  fontFamily: 'Poppins, system-ui, -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", sans-serif',
+                }}
+              >
                 Mustafa<br />
-                <span className="brand-outline">Graphics</span>
+                <span style={{ color: 'var(--purple-light)' }}>Graphics</span>
               </h1>
             </HeroItem>
 
             {/* Sub-label */}
             <HeroItem>
-              <div className="mt-2 mb-8 flex items-center gap-3 text-[13px] font-medium" style={{ color: 'var(--muted)' }}>
+              <div className="mt-2 mb-8 flex items-center justify-center gap-3 text-[13px] font-medium" style={{ color: 'var(--muted)' }}>
                 <span className="w-8 h-px" style={{ background: 'var(--border)' }} />
-                Muhammad Mustafa · Graphic Designer · 4+ Years
+                Muhammad Mustafa · Graphic Designer · 2+ Years
               </div>
             </HeroItem>
 
             {/* Description */}
             <HeroItem>
-              <p className="max-w-[500px] text-[15px] leading-[1.9]" style={{ color: 'var(--muted)' }}>
-                I specialize in <strong style={{ color: 'var(--white)', fontWeight: 500 }}>logos, branding, social media posts, and thumbnails</strong> — simple, modern, and effective designs that solve real problems and make brands stand out.
+              <p className="max-w-[640px] mx-auto text-[15px] leading-[1.9]" style={{ color: 'var(--muted)' }}>
+                I specialize in <strong style={{ color: 'var(--white)', fontWeight: 500 }}>Logo Designs, Social Media Designs, Complete Branding, and Thumbnail Designs</strong> — simple, modern, and effective designs that solve real problems and make brands stand out.
               </p>
             </HeroItem>
 
             {/* CTAs */}
             <HeroItem>
-              <div className="mt-10 flex flex-wrap gap-4 items-center">
+              <div className="mt-10 flex flex-wrap gap-4 items-center justify-center">
                 <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }}>
                   <Link href="/work" className="inline-flex items-center gap-2 px-8 py-[15px] rounded-[50px] text-[13px] tracking-[1px] uppercase font-medium text-white no-underline"
                     style={{ background: 'var(--purple)', border: '2px solid var(--purple)', boxShadow: '0 0 28px var(--purple-glow)' }}>
-                    View Work <ArrowRight size={14} />
+                    View Portfolio <ArrowRight size={14} />
                   </Link>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }}>
@@ -200,42 +289,15 @@ export default function HomePage() {
               </div>
             </HeroItem>
 
-            {/* Socials */}
-            <HeroItem>
-              <div className="mt-12 flex items-center gap-4">
-                <span className="text-[10px] tracking-[2px] uppercase font-medium" style={{ color: 'var(--muted)' }}>Follow</span>
-                <span className="w-6 h-px" style={{ background: 'var(--border)' }} />
-                <div className="flex gap-2">
-                  {SOCIALS.map(({ label, href, icon: Icon }) => (
-                    <motion.a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
-                      whileHover={{ y: -3, scale: 1.12 }} transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                      className="w-8 h-8 rounded-[8px] flex items-center justify-center transition-all duration-200"
-                      style={{ border: '1px solid var(--border)', color: 'var(--muted)' }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--purple)'; e.currentTarget.style.color = 'var(--purple-light)'; e.currentTarget.style.background = 'var(--purple-glow)' }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.background = 'transparent' }}>
-                      <Icon size={13} />
-                    </motion.a>
-                  ))}
-                </div>
-              </div>
-            </HeroItem>
           </HeroStagger>
         </motion.div>
 
-        {/* Scroll indicator */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8, duration: 0.8 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" style={{ color: 'var(--muted)' }}>
-          <span className="text-[10px] tracking-[2px] uppercase">Scroll</span>
-          <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}>
-            <ChevronDown size={16} />
-          </motion.div>
-        </motion.div>
       </section>
 
       {/* ═══════════ STATS ═══════════ */}
       <div className="flex flex-col md:flex-row px-6 md:px-[60px]"
         style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--deep)' }}>
-        {STATS.map((s, i) => <StatItem key={s.label} {...s} />)}
+        {STATS.map((s) => <StatItem key={s.label} {...s} />)}
       </div>
 
       {/* ═══════════ ABOUT ═══════════ */}
@@ -249,13 +311,13 @@ export default function HomePage() {
               <span style={{ color: 'var(--purple-light)' }}>crafting with precision.</span>
             </h2>
             <p className="text-[15px] leading-[1.9] mb-5" style={{ color: 'var(--muted)' }}>
-              Hi, I&apos;m <strong style={{ color: 'var(--white)', fontWeight: 500 }}>Muhammad Mustafa</strong> — a graphic designer with <strong style={{ color: 'var(--white)', fontWeight: 500 }}>4+ years of experience</strong> helping brands stand out through creative and impactful designs.
+              Hi, I&apos;m <strong style={{ color: 'var(--white)', fontWeight: 500 }}>Muhammad Mustafa</strong> — a graphic designer with <strong style={{ color: 'var(--white)', fontWeight: 500 }}>2+ years of experience</strong> helping brands stand out through creative and impactful designs.
             </p>
             <p className="text-[15px] leading-[1.9] mb-8" style={{ color: 'var(--muted)' }}>
               I specialize in logos, branding, social media posts, and thumbnails that are simple, modern, and effective. I focus on creative ideas, fast delivery, and designs that solve real problems.
             </p>
             <div className="flex flex-wrap gap-3 mb-8">
-              {['Logo Design', 'Branding', 'Social Media', 'Thumbnails'].map((tag, i) => (
+              {['Logo Design', 'Complete Branding', 'Social Media Design', 'Thumbnail Design'].map((tag, i) => (
                 <motion.span key={tag}
                   initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: i * 0.07, ease }}
@@ -265,11 +327,6 @@ export default function HomePage() {
                 </motion.span>
               ))}
             </div>
-            <motion.div whileHover={{ x: 4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }}>
-              <Link href="/contact" className="inline-flex items-center gap-2 text-[13px] tracking-[1px] uppercase font-medium no-underline hover:text-white transition-colors" style={{ color: 'var(--purple-light)' }}>
-                Work With Me <ArrowRight size={14} />
-              </Link>
-            </motion.div>
           </FadeLeft>
 
           <FadeRight delay={0.1}>
@@ -285,7 +342,7 @@ export default function HomePage() {
                 </div>
                 <div style={{ height: 1, background: 'var(--border)' }} />
                 <div className="grid grid-cols-3 gap-4 text-center">
-                  {[{ n: '60+', l: 'Projects' }, { n: '40+', l: 'Clients' }, { n: '4+', l: 'Years' }].map(item => (
+                  {[{ n: '60+', l: 'Projects' }, { n: '40+', l: 'Clients' }, { n: '2+', l: 'Years' }].map(item => (
                     <div key={item.l}>
                       <div className="text-[22px] font-semibold tracking-[-0.5px]" style={{ color: 'var(--white)' }}>{item.n}</div>
                       <div className="text-[11px] uppercase tracking-[0.8px]" style={{ color: 'var(--muted)' }}>{item.l}</div>
@@ -337,7 +394,7 @@ export default function HomePage() {
               Skills &amp; Tools
             </h2>
             <p className="text-[15px] leading-[1.9] mb-4" style={{ color: 'var(--muted)' }}>
-              With <strong style={{ color: 'var(--white)', fontWeight: 500 }}>4+ years of experience</strong>, I&apos;ve worked with clients across Pakistan and internationally, delivering quality results every time.
+              With <strong style={{ color: 'var(--white)', fontWeight: 500 }}>2+ years of experience</strong>, I&apos;ve worked with clients across Pakistan and internationally, delivering quality results every time.
             </p>
             <p className="text-[15px] leading-[1.9]" style={{ color: 'var(--muted)' }}>
               From logo design to social media — I deliver <strong style={{ color: 'var(--white)', fontWeight: 500 }}>quality work on time</strong>, every time.
@@ -385,7 +442,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-[18px] font-semibold" style={{ color: 'var(--white)' }}>No Work Available Yet</h3>
               <p className="text-[14px] max-w-xs" style={{ color: 'var(--muted)' }}>
-                Portfolio coming soon. Visit the admin panel to upload work.
+                Coming soon...
               </p>
             </div>
           </FadeUp>
@@ -409,6 +466,106 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {SERVICES.map((svc, i) => <ServiceCard key={svc.slug} {...svc} index={i} />)}
+        </div>
+      </section>
+
+      {/* ═══════════ TESTIMONIALS ═══════════ */}
+      <section className="px-6 md:px-[60px] py-24 md:py-[110px] overflow-hidden" style={{ background: 'var(--black)' }}>
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 lg:gap-8 items-start">
+          <div className="xl:col-span-3">
+            <FadeUp>
+              <div className="section-tag">Testimonials</div>
+              <h2 className="font-semibold leading-[1.05] tracking-[-1px] mb-8" style={{ fontSize: 'clamp(28px, 4vw, 48px)', color: 'var(--white)' }}>
+                What clients are saying
+              </h2>
+            </FadeUp>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {shownReviews.map((review, i) => (
+                <motion.div
+                  key={review.id}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.45, delay: i * 0.07 }}
+                  className="rounded-[14px] p-5"
+                  style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+                >
+                  <div className="text-[14px] mb-3" style={{ color: 'var(--purple-light)' }}>
+                    {'★'.repeat(review.rating)}<span style={{ color: 'var(--border)' }}>{'★'.repeat(Math.max(0, 5 - review.rating))}</span>
+                  </div>
+                  <p className="text-[14px] leading-[1.8] mb-4" style={{ color: 'var(--muted)' }}>
+                    &ldquo;{review.message}&rdquo;
+                  </p>
+                  <div className="text-[13px] font-medium" style={{ color: 'var(--white)' }}>{review.name}</div>
+                  {review.role && (
+                    <div className="text-[12px]" style={{ color: 'var(--muted)' }}>{review.role}</div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          <FadeUp delay={0.1} className="xl:col-span-2">
+            <div className="rounded-[16px] p-5 md:p-7 h-fit w-full max-w-xl xl:max-w-none mx-auto" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+              <div className="text-[11px] tracking-[2px] uppercase font-medium mb-2" style={{ color: 'var(--purple-light)' }}>
+                Write a Review
+              </div>
+              <h3 className="text-[24px] font-semibold mb-5" style={{ color: 'var(--white)' }}>Share your feedback</h3>
+              <form onSubmit={handleReviewSubmit} className="flex flex-col gap-3">
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Your name"
+                  value={formData.name}
+                  onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  required
+                />
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Role / company (optional)"
+                  value={formData.role}
+                  onChange={e => setFormData(prev => ({ ...prev, role: e.target.value }))}
+                />
+                <textarea
+                  className="form-input min-h-[140px] resize-y"
+                  placeholder="How was your experience?"
+                  value={formData.message}
+                  onChange={e => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                  required
+                />
+                <select
+                  className="form-input"
+                  value={formData.rating}
+                  onChange={e => setFormData(prev => ({ ...prev, rating: Number(e.target.value) }))}
+                >
+                  {[5, 4, 3, 2, 1].map(value => (
+                    <option key={value} value={value}>{value} Star{value > 1 ? 's' : ''}</option>
+                  ))}
+                </select>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="mt-1 py-[13px] rounded-[50px] text-[12px] tracking-[1px] uppercase font-medium text-white transition-all duration-200 disabled:opacity-60"
+                  style={{ background: 'var(--purple)', border: '2px solid var(--purple)' }}
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit Review'}
+                </button>
+              </form>
+              {submitMessage && (
+                <div
+                  className="mt-4 text-[12px] px-3 py-2 rounded-[8px]"
+                  style={{
+                    color: submitMessage.type === 'success' ? '#86efac' : '#fca5a5',
+                    border: submitMessage.type === 'success' ? '1px solid rgba(34,197,94,0.3)' : '1px solid rgba(239,68,68,0.35)',
+                    background: submitMessage.type === 'success' ? 'rgba(34,197,94,0.09)' : 'rgba(239,68,68,0.09)',
+                  }}
+                >
+                  {submitMessage.text}
+                </div>
+              )}
+            </div>
+          </FadeUp>
         </div>
       </section>
 

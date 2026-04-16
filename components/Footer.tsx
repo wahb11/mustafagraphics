@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { LinkedInIcon, InstagramIcon, FacebookIcon, TikTokIcon } from './SocialIcons'
+import { LinkedInIcon, InstagramIcon, FacebookIcon, TikTokIcon, WhatsAppIcon } from './SocialIcons'
 import { FadeUp } from './Animate'
 
 const SOCIALS = [
@@ -10,12 +10,13 @@ const SOCIALS = [
   { label: 'Instagram', href: 'https://www.instagram.com/mustafagraphics001/', icon: InstagramIcon },
   { label: 'Facebook', href: 'https://www.facebook.com/mustafa.graphics.2025', icon: FacebookIcon },
   { label: 'TikTok', href: 'https://www.tiktok.com/@mustafagraphics001', icon: TikTokIcon },
+  { label: 'WhatsApp', href: 'https://wa.me/message/2YK76JHY3LJND1', icon: WhatsAppIcon },
 ]
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
-  { href: '/work', label: 'Work' },
+  { href: '/portfolio', label: 'Portfolio' },
   { href: '/contact', label: 'Contact' },
 ]
 
@@ -24,7 +25,7 @@ export default function Footer() {
     <footer style={{ borderTop: '1px solid var(--border)', background: 'var(--deep)' }}>
       {/* Top row */}
       <FadeUp>
-      <div className="px-6 md:px-[60px] py-12 md:py-16 grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div className="px-6 md:px-[60px] py-12 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* Brand */}
         <div>
           <div className="text-[20px] font-semibold mb-3" style={{ color: 'var(--white)' }}>
@@ -70,50 +71,31 @@ export default function Footer() {
           </div>
           <ul className="flex flex-col gap-2">
             {NAV_LINKS.map(({ href, label }) => (
-              <li key={href}>
+              <motion.li
+                key={href}
+                initial={false}
+                whileHover={{ x: 4 }}
+                transition={{ type: 'spring', stiffness: 350, damping: 22 }}
+              >
                 <Link
                   href={href}
-                  className="text-[13px] no-underline transition-colors duration-200 hover:text-white flex items-center gap-2"
+                  className="text-[13px] no-underline flex items-center gap-2 relative transition-colors duration-200"
                   style={{ color: 'var(--muted)' }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.color = 'var(--purple-light)'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.color = 'var(--muted)'
+                  }}
                 >
                   <span className="w-3 h-px" style={{ background: 'var(--border)' }} />
-                  {label}
+                  <span className="relative inline-flex items-center">
+                    {label}
+                  </span>
                 </Link>
-              </li>
+              </motion.li>
             ))}
           </ul>
-        </div>
-
-        {/* Contact snippet */}
-        <div>
-          <div className="text-[11px] tracking-[2px] uppercase font-medium mb-5" style={{ color: 'var(--muted)' }}>
-            Get In Touch
-          </div>
-          <div className="flex flex-col gap-3">
-            <a
-              href="https://wa.me/message/2YK76JHY3LJND1"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[13px] no-underline transition-colors duration-200 hover:text-[var(--purple-light)] flex items-center gap-2"
-              style={{ color: 'var(--muted)' }}
-            >
-              <span className="text-[10px] tracking-[1px] uppercase font-medium px-2 py-0.5 rounded-[4px]"
-                style={{ background: 'var(--purple-glow)', color: 'var(--purple-light)', border: '1px solid var(--purple)' }}>
-                WA
-              </span>
-              WhatsApp Me
-            </a>
-            <a
-              href="https://www.instagram.com/mustafagraphics001/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[13px] no-underline transition-colors duration-200 hover:text-white"
-              style={{ color: 'var(--muted)' }}
-            >
-              @mustafagraphics001
-            </a>
-            <span className="text-[13px]" style={{ color: 'var(--muted)' }}>Pakistan</span>
-          </div>
         </div>
       </div>
       </FadeUp>

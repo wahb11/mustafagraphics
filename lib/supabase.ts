@@ -23,4 +23,19 @@ export type Work = {
   description: string
   image_url: string
   created_at: string
+  /** When missing (legacy row), treated as false in fetch helpers. */
+  featured?: boolean
+}
+
+export type ReviewStatus = 'pending' | 'approved'
+
+export type Review = {
+  id: string
+  name: string
+  role: string | null
+  message: string
+  rating: number
+  status: ReviewStatus
+  created_at: string
+  approved_at: string | null
 }

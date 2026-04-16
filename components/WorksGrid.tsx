@@ -38,13 +38,17 @@ export default function WorksGrid({
     ? works
     : works.filter(w => w.category === activeFilter)
 
-  const handleDelete = async (id: string, filename: string) => {
+  const handleDelete = async (id: string, imageUrl: string) => {
     if (!confirm('Delete this work?')) return
     setDeleting(id)
-    await deleteWork(id, filename)
-    setWorks(prev => prev.filter(w => w.id !== id))
+    const ok = await deleteWork(id, imageUrl)
     setDeleting(null)
-    onWorkDeleted?.()
+    if (ok) {
+      setWorks(prev => prev.filter(w => w.id !== id))
+      onWorkDeleted?.()
+    } else {
+      alert('Delete failed. Try again or use the admin panel.')
+    }
   }
 
   return (

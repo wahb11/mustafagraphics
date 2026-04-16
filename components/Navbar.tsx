@@ -111,7 +111,7 @@ export default function Navbar() {
           </li>
 
           {[
-            { href: '/work', label: 'Work' },
+            { href: '/work', label: 'Portfolio' },
             { href: '/contact', label: 'Contact' },
           ].map(({ href, label }) => (
             <li key={href}>
@@ -154,7 +154,7 @@ export default function Navbar() {
               {[
                 { href: '/', label: 'Home' },
                 { href: '/services', label: 'Services' },
-                { href: '/work', label: 'Work' },
+                { href: '/work', label: 'Portfolio' },
                 { href: '/contact', label: 'Contact' },
               ].map(({ href, label }, i) => (
                 <motion.div

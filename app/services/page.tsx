@@ -11,7 +11,7 @@ const SERVICES = [
     icon: '✦',
     name: 'Logo Design',
     description: 'Professional logos, brand marks, and complete brand identity packages that make your business stand out in a crowded marketplace.',
-    tools: ['Illustrator', 'Photoshop', 'Canva'],
+    tools: ['Illustrator', 'Photoshop', 'CorelDRAW'],
     slug: 'logo-design',
   },
   {
@@ -32,7 +32,7 @@ const SERVICES = [
     icon: '▶',
     name: 'YouTube Thumbnail',
     description: 'High-CTR YouTube thumbnails designed to get more clicks and grow your channel faster with compelling visuals.',
-    tools: ['Photoshop', 'Canva'],
+    tools: ['Photoshop', 'CorelDRAW'],
     slug: 'youtube-thumbnail',
   },
   {

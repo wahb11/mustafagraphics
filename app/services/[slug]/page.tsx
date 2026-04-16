@@ -27,7 +27,7 @@ const SERVICE_DATA: Record<string, {
       'Brand color palette',
       'Typography selection',
     ],
-    tools: ['Adobe Illustrator', 'Adobe Photoshop', 'Canva'],
+    tools: ['Adobe Illustrator', 'Adobe Photoshop', 'CorelDRAW'],
   },
   'social-media': {
     icon: '📱',
@@ -43,7 +43,7 @@ const SERVICE_DATA: Record<string, {
       'Consistent brand look',
       'Editable templates (optional)',
     ],
-    tools: ['Canva', 'Adobe Photoshop', 'Adobe Illustrator'],
+    tools: ['CorelDRAW', 'Adobe Photoshop', 'Adobe Illustrator'],
   },
   'banner-design': {
     icon: '🖼',
@@ -59,7 +59,7 @@ const SERVICE_DATA: Record<string, {
       'Correct platform dimensions',
       'Mobile-responsive design',
     ],
-    tools: ['Adobe Photoshop', 'Canva', 'Adobe Illustrator'],
+    tools: ['Adobe Photoshop', 'CorelDRAW', 'Adobe Illustrator'],
   },
   'youtube-thumbnail': {
     icon: '▶',
@@ -71,11 +71,11 @@ const SERVICE_DATA: Record<string, {
       'Custom thumbnail design',
       'High-contrast visuals',
       'Bold text overlays',
-      '1280×720px resolution',
+      '1920×1080px resolution',
       'YouTube-optimized format',
       'Multiple style variations',
     ],
-    tools: ['Adobe Photoshop', 'Canva'],
+    tools: ['Adobe Photoshop', 'CorelDRAW'],
   },
   'graphic-design': {
     icon: '🎨',
@@ -91,7 +91,7 @@ const SERVICE_DATA: Record<string, {
       'Web-optimized versions',
       'CMYK color mode',
     ],
-    tools: ['Adobe Photoshop', 'Adobe Illustrator', 'Canva'],
+    tools: ['Adobe Photoshop', 'Adobe Illustrator', 'CorelDRAW'],
   },
   'branding-package': {
     icon: '💼',
@@ -107,7 +107,7 @@ const SERVICE_DATA: Record<string, {
       'Social media kit',
       'Brand guidelines PDF',
     ],
-    tools: ['Adobe Illustrator', 'Adobe Photoshop', 'Canva'],
+    tools: ['Adobe Illustrator', 'Adobe Photoshop', 'CorelDRAW'],
   },
 }
 

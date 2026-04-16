@@ -2,16 +2,18 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { MessageCircle, MapPin, Send, CheckCircle } from 'lucide-react'
-import { LinkedInIcon, InstagramIcon, FacebookIcon, TikTokIcon } from '@/components/SocialIcons'
+import { Mail, Send, CheckCircle } from 'lucide-react'
+import { LinkedInIcon, InstagramIcon, FacebookIcon, TikTokIcon, WhatsAppIcon } from '@/components/SocialIcons'
 import { FadeUp, FadeLeft, FadeRight, HeroStagger, HeroItem } from '@/components/Animate'
+
+const CONTACT_EMAIL = 'mustafapersonaluse@gmail.com'
 
 const CONTACT_DETAILS = [
   {
-    icon: MessageCircle,
-    label: 'WhatsApp',
-    value: 'Message on WhatsApp',
-    href: 'https://wa.me/message/2YK76JHY3LJND1',
+    icon: Mail,
+    label: 'Email',
+    value: CONTACT_EMAIL,
+    href: `mailto:${CONTACT_EMAIL}`,
     accent: true,
   },
   {
@@ -29,10 +31,10 @@ const CONTACT_DETAILS = [
     accent: false,
   },
   {
-    icon: MapPin,
-    label: 'Location',
-    value: 'Pakistan',
-    href: null,
+    icon: WhatsAppIcon,
+    label: 'WhatsApp',
+    value: 'Message on WhatsApp',
+    href: 'https://wa.me/message/2YK76JHY3LJND1',
     accent: false,
   },
 ]
@@ -53,6 +55,7 @@ const SERVICES_LIST = [
   'YouTube Thumbnail',
   'Graphic Design',
   'Branding Package',
+  'Others'
 ]
 
 export default function ContactPage() {
@@ -64,8 +67,25 @@ export default function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const text = `Hello! I'm ${name}${email ? ` (${email})` : ''}.\n\nService needed: ${service}\n\n${message}`
-    window.open(`https://wa.me/message/2YK76JHY3LJND1?text=${encodeURIComponent(text)}`, '_blank')
+    const subject = `New Project Inquiry: ${service}`
+    const body = [
+      `Hello Mustafa,`,
+      ``,
+      `I would like to discuss a project.`,
+      ``,
+      `Name: ${name}`,
+      `Email: ${email || 'Not provided'}`,
+      `Service Needed: ${service}`,
+      ``,
+      `Project Details:`,
+      `${message || 'Not provided'}`,
+    ].join('\n')
+
+    const gmailComposeUrl =
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(CONTACT_EMAIL)}` +
+      `&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+
+    window.open(gmailComposeUrl, '_blank', 'noopener,noreferrer')
     setSent(true)
     setTimeout(() => setSent(false), 5000)
   }
@@ -119,7 +139,7 @@ export default function ContactPage() {
           <FadeLeft>
             <div className="mb-10">
               <p className="text-[15px] leading-[1.9]" style={{ color: 'var(--muted)' }}>
-                I&apos;m <strong style={{ color: 'var(--white)', fontWeight: 500 }}>Muhammad Mustafa</strong>, a graphic designer with 4+ years of experience. Whether it&apos;s a logo, social media content, or a complete rebrand — I&apos;m here to help.
+                I&apos;m <strong style={{ color: 'var(--white)', fontWeight: 500 }}>Muhammad Mustafa</strong>, a graphic designer with 2+ years of experience. Whether it&apos;s a logo, social media content, or a complete rebrand — I&apos;m here to help.
               </p>
             </div>
 
@@ -250,7 +270,7 @@ export default function ContactPage() {
                     <input
                       type="text"
                       className="form-input"
-                      placeholder="Ali Ahmed"
+                      placeholder="Mustafa Graphics"
                       value={name}
                       onChange={e => setName(e.target.value)}
                       required
@@ -263,7 +283,7 @@ export default function ContactPage() {
                     <input
                       type="email"
                       className="form-input"
-                      placeholder="ali@example.com"
+                      placeholder="mustafa@example.com"
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                     />
@@ -308,7 +328,7 @@ export default function ContactPage() {
                     style={{ background: 'var(--purple-glow)', border: '1px solid var(--purple)', color: 'var(--purple-light)' }}
                   >
                     <CheckCircle size={16} />
-                    Opening WhatsApp — your message is ready to send!
+                    Opening Gmail compose — your message is ready to send!
                   </motion.div>
                 )}
 
@@ -325,7 +345,7 @@ export default function ContactPage() {
                   }}
                 >
                   <Send size={14} />
-                  Send via WhatsApp
+                  Send Message
                 </motion.button>
               </form>
             </div>

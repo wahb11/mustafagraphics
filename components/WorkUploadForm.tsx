@@ -10,7 +10,8 @@ const CATEGORIES = [
   'Banner',
   'Thumbnail',
   'Graphic Design',
-  'Branding',
+  'Branding'
+  ,'Others'
 ]
 
 interface WorkUploadFormProps {
@@ -22,6 +23,7 @@ export default function WorkUploadForm({ onUploadSuccess }: WorkUploadFormProps)
   const [category, setCategory] = useState('')
   const [description, setDescription] = useState('')
   const [file, setFile] = useState<File | null>(null)
+  const [featured, setFeatured] = useState(true)
   const [preview, setPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -46,13 +48,14 @@ export default function WorkUploadForm({ onUploadSuccess }: WorkUploadFormProps)
     setLoading(true)
     setError(null)
 
-    const result = await uploadWork(title, category, description, file)
+    const result = await uploadWork(title, category, description, file, featured)
 
     if (result.success) {
       setSuccess(true)
       setTitle('')
       setCategory('')
       setDescription('')
+      setFeatured(true)
       setFile(null)
       setPreview(null)
       if (fileRef.current) fileRef.current.value = ''
@@ -99,6 +102,19 @@ export default function WorkUploadForm({ onUploadSuccess }: WorkUploadFormProps)
           </select>
         </div>
       </div>
+
+      <label className="flex items-center gap-3 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={featured}
+          onChange={e => setFeatured(e.target.checked)}
+          className="w-4 h-4 rounded border shrink-0 accent-[var(--purple)]"
+          style={{ borderColor: 'var(--border)' }}
+        />
+        <span className="text-[13px]" style={{ color: 'var(--white)' }}>
+          Show in featured work on the homepage
+        </span>
+      </label>
 
       <div className="flex flex-col gap-2">
         <label className="text-[11px] tracking-[1.5px] uppercase font-medium" style={{ color: 'var(--muted)' }}>

@@ -25,6 +25,12 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
           rel="stylesheet"
         />
+        {/* Poppins for hero \"Graphics\" word */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body>
         <Cursor />
