@@ -50,7 +50,7 @@ export default function Navbar() {
           borderBottom: scrolled ? '1px solid var(--border)' : 'none',
         }}
       >
-        <Link href="/" className="text-[20px] font-semibold tracking-[-0.3px] text-white no-underline">
+        <Link href="/" className="text-[17px] sm:text-[20px] font-semibold tracking-[-0.3px] text-white no-underline">
           Mustafa <span style={{ color: 'var(--purple-light)' }}>Graphics</span>
         </Link>
 

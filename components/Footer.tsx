@@ -16,7 +16,7 @@ const SOCIALS = [
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
-  { href: '/portfolio', label: 'Portfolio' },
+  { href: '/work', label: 'Portfolio' },
   { href: '/contact', label: 'Contact' },
 ]
 
@@ -105,21 +105,21 @@ export default function Footer() {
         className="px-6 md:px-[60px] py-5 flex flex-col md:flex-row items-center justify-between gap-3"
         style={{ borderTop: '1px solid var(--border)' }}
       >
-        <div className="text-[12px]" style={{ color: 'var(--muted)' }}>
+        <div className="text-[12px] text-center md:text-left" style={{ color: 'var(--muted)' }}>
           © 2025 Mustafa Graphics. All rights reserved.
         </div>
-        <div className="flex gap-5">
+        <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 md:gap-5 w-full md:w-auto">
           {SOCIALS.map(({ label, href, icon: Icon }) => (
             <a
               key={label}
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[12px] tracking-[0.8px] uppercase font-medium no-underline transition-colors duration-200 hover:text-white flex items-center gap-1.5"
+              className="text-[12px] tracking-[0.8px] uppercase font-medium no-underline transition-colors duration-200 hover:text-white flex items-center gap-1.5 px-2 py-1 rounded-[6px]"
               style={{ color: 'var(--muted)' }}
             >
               <Icon size={11} />
-              {label}
+              <span className="hidden sm:inline">{label}</span>
             </a>
           ))}
         </div>

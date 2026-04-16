@@ -425,7 +425,7 @@ export default function HomePage() {
         </div>
 
         {featuredWorks.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
             {featuredWorks.map((work, i) => (
               <motion.div key={work.id}
                 initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}

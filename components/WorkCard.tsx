@@ -36,14 +36,14 @@ export default function WorkCard({ work, onDelete, showDelete = false }: WorkCar
       }}
     >
       {/* Image container */}
-      <div className="relative aspect-[4/3] overflow-hidden" style={{ background: 'var(--deep)' }}>
+      <div className="relative aspect-[5/4] overflow-hidden" style={{ background: 'var(--deep)' }}>
         {work.image_url ? (
           <Image
             src={work.image_url}
             alt={work.title}
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-5xl opacity-15">✦</div>

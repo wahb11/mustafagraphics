@@ -16,6 +16,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -25,6 +26,17 @@ body {
   font-weight: 400;
   overflow-x: hidden;
   cursor: none;
+}
+
+* {
+  min-width: 0;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
 }
 
 body::before {
@@ -40,6 +52,24 @@ body::before {
 @media (max-width: 768px) {
   body {
     cursor: auto;
+  }
+
+  .filter-btn {
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 640px) {
+  .section-tag {
+    font-size: 10px;
+    letter-spacing: 2px;
+    gap: 8px;
+  }
+
+  .filter-btn {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    padding: 8px 14px;
   }
 }
 
