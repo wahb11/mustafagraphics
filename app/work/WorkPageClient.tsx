@@ -1,8 +1,10 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import WorksGrid from '@/components/WorksGrid'
 import { Work } from '@/lib/supabase'
+import { getWorks } from '@/lib/works'
 import { HeroStagger, HeroItem } from '@/components/Animate'
 
 interface Props {
@@ -10,6 +12,18 @@ interface Props {
 }
 
 export default function WorkPageClient({ initialWorks }: Props) {
+  const [works, setWorks] = useState<Work[]>(initialWorks)
+
+  useEffect(() => {
+    let mounted = true
+    getWorks().then(data => {
+      if (mounted) setWorks(data)
+    })
+    return () => {
+      mounted = false
+    }
+  }, [])
+
   return (
     <>
       {/* Hero */}
@@ -75,7 +89,7 @@ export default function WorkPageClient({ initialWorks }: Props) {
 
       {/* Gallery */}
       <section className="px-6 md:px-[60px] py-20 md:py-[110px]" style={{ background: 'var(--deep)' }}>
-        <WorksGrid initialWorks={initialWorks} showFilters={true} />
+        <WorksGrid initialWorks={works} showFilters={true} />
       </section>
     </>
   )

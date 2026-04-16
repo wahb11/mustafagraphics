@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import WorkCard from './WorkCard'
 import { Work } from '@/lib/supabase'
@@ -33,6 +33,10 @@ export default function WorksGrid({
   const [activeFilter, setActiveFilter] = useState('all')
   const [works, setWorks] = useState<Work[]>(initialWorks)
   const [deleting, setDeleting] = useState<string | null>(null)
+
+  useEffect(() => {
+    setWorks(initialWorks)
+  }, [initialWorks])
 
   const filtered = activeFilter === 'all'
     ? works
