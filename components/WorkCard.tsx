@@ -36,7 +36,7 @@ export default function WorkCard({ work, onDelete, showDelete = false }: WorkCar
       }}
     >
       {/* Image container */}
-      <div className="relative aspect-[5/4] overflow-hidden" style={{ background: 'var(--deep)' }}>
+      <div className="relative aspect-video overflow-hidden" style={{ background: 'var(--deep)' }}>
         {work.image_url ? (
           <Image
             src={work.image_url}

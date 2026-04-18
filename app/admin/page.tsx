@@ -434,7 +434,7 @@ export default function AdminPage() {
                         className="rounded-[12px] overflow-hidden flex flex-col"
                         style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
                       >
-                        <div className="relative aspect-[4/3]" style={{ background: 'var(--deep)' }}>
+                        <div className="relative aspect-video" style={{ background: 'var(--deep)' }}>
                           {work.image_url ? (
                             <Image
                               src={work.image_url}

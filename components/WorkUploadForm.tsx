@@ -18,6 +18,14 @@ interface WorkUploadFormProps {
   onUploadSuccess?: () => void
 }
 
+const IDEAL_IMAGE_WIDTH = 1280
+const IDEAL_IMAGE_HEIGHT = 720
+const MIN_IMAGE_WIDTH = 640
+const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024
+const TARGET_ASPECT_RATIO = IDEAL_IMAGE_WIDTH / IDEAL_IMAGE_HEIGHT
+const ASPECT_RATIO_TOLERANCE = 0.02
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif']
+
 export default function WorkUploadForm({ onUploadSuccess }: WorkUploadFormProps) {
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState('')
@@ -30,9 +38,56 @@ export default function WorkUploadForm({ onUploadSuccess }: WorkUploadFormProps)
   const [error, setError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]
     if (!f) return
+
+    if (!ALLOWED_IMAGE_TYPES.includes(f.type)) {
+      setError('Only JPG, PNG, or GIF files are allowed.')
+      setFile(null)
+      setPreview(null)
+      if (fileRef.current) fileRef.current.value = ''
+      return
+    }
+
+    if (f.size > MAX_FILE_SIZE_BYTES) {
+      setError('Image must be 8MB or smaller.')
+      setFile(null)
+      setPreview(null)
+      if (fileRef.current) fileRef.current.value = ''
+      return
+    }
+
+    const objectUrl = URL.createObjectURL(f)
+    const dimensions = await new Promise<{ width: number; height: number } | null>((resolve) => {
+      const img = new Image()
+      img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight })
+      img.onerror = () => resolve(null)
+      img.src = objectUrl
+    })
+    URL.revokeObjectURL(objectUrl)
+
+    if (!dimensions) {
+      setError('Could not read this image. Please choose another file.')
+      setFile(null)
+      setPreview(null)
+      if (fileRef.current) fileRef.current.value = ''
+      return
+    }
+
+    const ratio = dimensions.width / dimensions.height
+    const isRatioValid = Math.abs(ratio - TARGET_ASPECT_RATIO) <= ASPECT_RATIO_TOLERANCE
+    if (dimensions.width < MIN_IMAGE_WIDTH || !isRatioValid) {
+      setError(
+        `Use a 16:9 image (ideal ${IDEAL_IMAGE_WIDTH}x${IDEAL_IMAGE_HEIGHT}, minimum width ${MIN_IMAGE_WIDTH}px).`
+      )
+      setFile(null)
+      setPreview(null)
+      if (fileRef.current) fileRef.current.value = ''
+      return
+    }
+
+    setError(null)
     setFile(f)
     const reader = new FileReader()
     reader.onload = ev => setPreview(ev.target?.result as string)
@@ -133,8 +188,11 @@ export default function WorkUploadForm({ onUploadSuccess }: WorkUploadFormProps)
         <label className="text-[11px] tracking-[1.5px] uppercase font-medium" style={{ color: 'var(--muted)' }}>
           Image *
         </label>
+        <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
+          Use JPG/PNG/GIF up to 8MB, 16:9 ratio ({IDEAL_IMAGE_WIDTH}x{IDEAL_IMAGE_HEIGHT} ideal, {MIN_IMAGE_WIDTH}px minimum width).
+        </p>
         <label
-          className="relative flex flex-col items-center justify-center min-h-[160px] rounded-[12px] cursor-pointer transition-all duration-200 overflow-hidden"
+          className="relative flex w-full flex-col items-center justify-center aspect-video rounded-[12px] cursor-pointer transition-all duration-200 overflow-hidden"
           style={{ border: '1.5px dashed var(--border)', background: 'var(--card)' }}
           onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--purple)')}
           onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
@@ -153,7 +211,7 @@ export default function WorkUploadForm({ onUploadSuccess }: WorkUploadFormProps)
           <input
             ref={fileRef}
             type="file"
-            accept="image/*"
+            accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
             className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
             onChange={handleFileChange}
             required

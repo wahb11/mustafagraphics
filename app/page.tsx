@@ -307,8 +307,8 @@ export default function HomePage() {
             <div className="section-tag">About Me</div>
             <h2 className="font-semibold leading-[1.05] tracking-[-1px] mb-6"
               style={{ fontSize: 'clamp(28px, 4vw, 48px)', color: 'var(--white)' }}>
-              Designing with purpose,<br />
-              <span style={{ color: 'var(--purple-light)' }}>crafting with precision.</span>
+              Designing with Purpose,<br />
+              <span style={{ color: 'var(--purple-light)' }}>Crafting with Precision.</span>
             </h2>
             <p className="text-[15px] leading-[1.9] mb-5" style={{ color: 'var(--muted)' }}>
               Hi, I&apos;m <strong style={{ color: 'var(--white)', fontWeight: 500 }}>Muhammad Mustafa</strong> — a graphic designer with <strong style={{ color: 'var(--white)', fontWeight: 500 }}>2+ years of experience</strong> helping brands stand out through creative and impactful designs.
