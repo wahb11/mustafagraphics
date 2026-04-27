@@ -9,7 +9,7 @@ create extension if not exists pgcrypto;
 create table if not exists public.works (
   id uuid primary key default gen_random_uuid(),
   title text not null,
-  category text not null check (category in ('Logo', 'Social Media', 'Banner', 'Thumbnail', 'Graphic Design', 'Branding')),
+  category text not null check (category in ('Logo', 'Social Media', 'Banner', 'Thumbnail', 'Graphic Design', 'Branding', 'Others')),
   description text not null default '',
   image_url text not null,
   created_at timestamptz not null default now(),
